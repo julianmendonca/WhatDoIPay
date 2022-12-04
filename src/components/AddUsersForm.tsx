@@ -1,6 +1,6 @@
 import {
   Box,
-  Button,
+  Divider,
   ListItem,
   Tag,
   Text,
@@ -9,10 +9,13 @@ import {
 } from "@chakra-ui/react";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
-import { User } from "../types/user";
+import { Payment, User } from "../types";
 import { splitExpences } from "../utils/splitAlgorithm";
 import useLocalStorage from "../utils/useLocalStorage";
-import UserForm from "./UserForm";
+import AddUserInput from "./AddUserInput";
+import PaymentDebts from "./PaymentDebts";
+import PaymentForm from "./PaymentForm";
+import UserPayments from "./UserPayments";
 
 const AddUsersForm = () => {
   const { colorMode } = useColorMode();
@@ -21,24 +24,70 @@ const AddUsersForm = () => {
     ReturnType<typeof splitExpences>
   >([]);
 
-  const onAddUserSubmit = (user: User) => {
-    setUsers((prevUsers) => [user, ...prevUsers]);
+  const addPaymentToUser = ({
+    userId,
+    payment,
+  }: {
+    userId: string;
+    payment: Payment;
+  }) => {
+    setUsers((prevUsers) => {
+      const copy = [...prevUsers];
+      copy.find((user) => user.id === userId)?.payments.push(payment);
+      return copy;
+    });
   };
 
-  const handleUpdate = (user: User) => {
+  const updateUserPayment = ({
+    userId,
+    payment,
+  }: {
+    userId: string;
+    payment: Payment;
+  }) => {
     setUsers((prevUsers) => {
       const usersCopy = [...prevUsers];
-      const foundUser = usersCopy.find((i) => i.id === user.id);
-      if (foundUser) {
-        foundUser.amountPaid = user.amountPaid;
-        foundUser.name = user.name;
+      const foundUser = usersCopy.find((i) => i.id === userId);
+      const paymentsCopy = [...(foundUser?.payments || [])];
+      const paymentToUpdate = paymentsCopy.find(
+        (paymentCopy) => paymentCopy.id === payment.id
+      );
+      if (paymentToUpdate && foundUser) {
+        paymentToUpdate.amount = payment.amount;
+        paymentToUpdate.description = payment.description;
+        foundUser.payments = paymentsCopy;
       }
       return usersCopy;
     });
   };
 
-  const handleRemove = (user: User) => {
-    setUsers((prev) => prev.filter((i) => i.id !== user.id));
+  const deleteUserPayment = ({
+    userId,
+    payment,
+  }: {
+    userId: string;
+    payment: Payment;
+  }) => {
+    setUsers((prevUsers) => {
+      const usersCopy = [...prevUsers];
+      const user = usersCopy.find((user) => user.id === userId);
+      let userPayments = user?.payments;
+      userPayments = userPayments?.filter(
+        (userPayment) => userPayment.id !== payment.id
+      );
+      if (userPayments && user) {
+        user.payments = userPayments;
+      }
+      console.log({ usersCopy, userPayments });
+      return usersCopy;
+    });
+  };
+
+  const addUser = (user: User) => setUsers((prev) => [user, ...prev]);
+
+  const removeUser = (userId: string) => {
+    console.log(userId);
+    setUsers((prev) => prev.filter((i) => i.id !== userId));
   };
 
   useEffect(() => {
@@ -47,26 +96,26 @@ const AddUsersForm = () => {
 
   return (
     <>
-      <UserForm onSubmit={onAddUserSubmit} resetOnSubmit marginY="5" />
-      <AnimatePresence>
-        {users.map((user) => (
-          <UserForm
-            amountPaid={user.amountPaid}
-            name={user.name}
-            key={user.id}
-            id={user.id}
-            onUpdate={handleUpdate}
-            onSubmit={handleRemove}
-            rightAction={"remove"}
-            marginBottom="5"
-          />
-        ))}
-      </AnimatePresence>
-      <Text fontSize="2xl" mb="5" mt="24">
+      <AddUserInput onSubmit={addUser} mb="14" />
+      {users.map((user) => (
+        <UserPayments
+          key={user.id}
+          name={user.name}
+          userId={user.id}
+          payments={user.payments}
+          onSubmit={addPaymentToUser}
+          onUpdate={updateUserPayment}
+          onDeletePayment={deleteUserPayment}
+          onDeleteUser={removeUser}
+        />
+      ))}
+      <Divider size="xl" mt="24" mb="5" />
+
+      <Text fontSize="2xl" mb="5">
         The following people must make payments
       </Text>
       {pendingPayments.length === 0 && (
-        <Text fontSize="lg " mt="-2" color="gray.300">
+        <Text fontSize="lg " mt="-2" color="gray.600">
           No pending payments
         </Text>
       )}
@@ -81,18 +130,7 @@ const AddUsersForm = () => {
           >
             {pendingPayment.name}
           </Tag>
-          <UnorderedList ml="10" my="5">
-            {pendingPayment.shouldPayTo.map((payment) => (
-              <ListItem key={payment.id}>
-                <Text key={payment.id}>
-                  Pay ${payment.amount} to{" "}
-                  <span style={{ textTransform: "capitalize" }}>
-                    {payment.name}
-                  </span>
-                </Text>
-              </ListItem>
-            ))}
-          </UnorderedList>
+          <PaymentDebts payments={pendingPayment.shouldPayTo} />
         </Box>
       ))}
     </>

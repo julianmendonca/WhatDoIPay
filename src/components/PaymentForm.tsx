@@ -9,28 +9,28 @@ import {
   InputLeftElement,
 } from "@chakra-ui/react";
 import cuid from "cuid";
-import { useEffect, useRef } from "react";
-import { User } from "../types/user";
-import { AnimatePresence, motion } from "framer-motion";
+import { useEffect } from "react";
+import { Payment } from "../types";
+import { motion } from "framer-motion";
 
-type UserFormProps = Omit<BoxProps, "onSubmit"> &
-  Partial<User> & {
-    onSubmit?: (user: User) => unknown;
-    onUpdate?: (user: User) => unknown;
+type PaymentFormProps = Omit<BoxProps, "onSubmit"> &
+  Partial<Payment> & {
+    onSubmit?: (payment: Payment) => unknown;
+    onUpdate?: (payment: Payment) => unknown;
     resetOnSubmit?: boolean;
     rightAction?: "add" | "remove";
   };
 
-const UserForm = ({
+const PaymentForm = ({
   onSubmit: onSubmitProp,
   onUpdate,
-  amountPaid = 0,
+  amount: amount = 0,
   id,
-  name = "",
+  description = "",
   resetOnSubmit = false,
   rightAction = "add",
   ...boxProps
-}: UserFormProps) => {
+}: PaymentFormProps) => {
   const {
     register,
     handleSubmit,
@@ -39,22 +39,22 @@ const UserForm = ({
     watch,
     getValues,
     setFocus,
-  } = useForm<User>({
-    defaultValues: { amountPaid, id: id || cuid(), name },
+  } = useForm<Payment>({
+    defaultValues: { amount: amount, id: id || cuid(), description },
   });
-  const [watchedAmountPaid, watchedName] = watch(["amountPaid", "name"]);
+  const [watchedamount, watchedName] = watch(["amount", "description"]);
   useEffect(() => {
     const userId = getValues("id");
     onUpdate?.({
       id: userId,
-      amountPaid: watchedAmountPaid,
-      name: watchedName,
+      amount: watchedamount,
+      description: watchedName,
     });
-  }, [watchedAmountPaid, watchedName]);
+  }, [watchedamount, watchedName]);
 
-  const onSubmit = (user: User) => {
+  const onSubmit = (user: Payment) => {
     onSubmitProp?.(user);
-    setFocus("name");
+    setFocus("description");
     if (resetOnSubmit) {
       reset();
       setValue("id", cuid());
@@ -81,9 +81,9 @@ const UserForm = ({
             <InputGroup>
               <Input
                 textTransform="capitalize"
-                placeholder="Name"
+                placeholder="Payment description"
                 maxWidth="sm"
-                {...register("name", { required: true, minLength: 1 })}
+                {...register("description", { required: true, minLength: 1 })}
               />
             </InputGroup>
 
@@ -100,7 +100,7 @@ const UserForm = ({
                 type="number"
                 maxWidth="sm"
                 onKeyDown={(e) => e.charCode >= 48}
-                {...register("amountPaid", {
+                {...register("amount", {
                   valueAsNumber: true,
                   min: 0,
                   required: true,
@@ -118,4 +118,4 @@ const UserForm = ({
   );
 };
 
-export default UserForm;
+export default PaymentForm;
