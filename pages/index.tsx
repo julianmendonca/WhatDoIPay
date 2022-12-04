@@ -12,8 +12,8 @@ export default function Home() {
   return (
     <div className={styles.container}>
       <Head>
-        <title>Create Next App</title>
-        <meta name="description" content="Split the expences easily!" />
+        <title>Who Should Pay?</title>
+        <meta name="description" content="Easly split the expenses!" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Button onClick={toggleColorMode} mt="5">
