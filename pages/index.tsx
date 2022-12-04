@@ -23,8 +23,8 @@ export default function Home() {
         What should I pay?
       </Heading>
       <Text textAlign="center" mb="16">
-        Add names and how much they paid, then look at the bottom to check to
-        whom each one has to pay
+        Add names and how much they have paid, then take a look at the bottom to
+        check to whom each one has to make a payment to
       </Text>
       <AddUsersForm />
     </div>

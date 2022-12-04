@@ -74,6 +74,7 @@ const AddUsersForm = () => {
             variant="solid"
             colorScheme={colorMode === "dark" ? "teal" : "blackAlpha"}
             boxShadow="lg"
+            textTransform="capitalize"
           >
             {pendingPayment.name}
           </Tag>
@@ -81,7 +82,10 @@ const AddUsersForm = () => {
             {pendingPayment.shouldPayTo.map((payment) => (
               <ListItem key={payment.id}>
                 <Text key={payment.id}>
-                  Pay ${payment.amount} to {payment.name}
+                  Pay ${payment.amount} to{" "}
+                  <span style={{ textTransform: "capitalize" }}>
+                    {payment.name}
+                  </span>
                 </Text>
               </ListItem>
             ))}

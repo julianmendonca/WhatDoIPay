@@ -1,4 +1,3 @@
-import { use } from "react";
 import { User } from "../types/user";
 
 type MappedUser = { id: string; amount: number; name: string };
