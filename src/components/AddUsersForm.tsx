@@ -7,6 +7,7 @@ import {
   UnorderedList,
   useColorMode,
 } from "@chakra-ui/react";
+import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { User } from "../types/user";
 import { splitExpences } from "../utils/splitAlgorithm";
@@ -47,18 +48,20 @@ const AddUsersForm = () => {
   return (
     <>
       <UserForm onSubmit={onAddUserSubmit} resetOnSubmit marginY="5" />
-      {users.map((user) => (
-        <UserForm
-          amountPaid={user.amountPaid}
-          name={user.name}
-          key={user.id}
-          id={user.id}
-          onUpdate={handleUpdate}
-          onSubmit={handleRemove}
-          rightAction={"remove"}
-          marginBottom="5"
-        />
-      ))}
+      <AnimatePresence>
+        {users.map((user) => (
+          <UserForm
+            amountPaid={user.amountPaid}
+            name={user.name}
+            key={user.id}
+            id={user.id}
+            onUpdate={handleUpdate}
+            onSubmit={handleRemove}
+            rightAction={"remove"}
+            marginBottom="5"
+          />
+        ))}
+      </AnimatePresence>
       <Text fontSize="2xl" mb="5" mt="24">
         The following people must make payments
       </Text>

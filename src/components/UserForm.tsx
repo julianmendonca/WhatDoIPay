@@ -62,58 +62,59 @@ const UserForm = ({
   };
 
   return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0, top: "100px" }}
-        animate={{ opacity: 1, top: 0 }}
-        transition={{ duration: 0.5 }}
-        exit={{ opacity: 0 }}
-        key={name}
-      >
-        <Box {...boxProps}>
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            onKeyDown={(e) =>
-              // Disable submit on "Enter" key
-              rightAction === "remove" && e.key == "Enter" && e.preventDefault()
-            }
-          >
-            <Flex maxW="900" margin="0 auto">
-              <InputGroup>
-                <Input
-                  textTransform="capitalize"
-                  placeholder="Name"
-                  maxWidth="sm"
-                  {...register("name", { required: true, minLength: 1 })}
-                />
-              </InputGroup>
+    <motion.div
+      initial={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      animate={{ opacity: 1 }}
+      exit={{ x: -100, opacity: 0 }}
+      key={id}
+    >
+      <Box {...boxProps}>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          onKeyDown={(e) =>
+            // Disable submit on "Enter" key
+            rightAction === "remove" && e.key == "Enter" && e.preventDefault()
+          }
+        >
+          <Flex maxW="900" margin="0 auto">
+            <InputGroup>
+              <Input
+                textTransform="capitalize"
+                placeholder="Name"
+                maxWidth="sm"
+                {...register("name", { required: true, minLength: 1 })}
+              />
+            </InputGroup>
 
-              <InputGroup>
-                <InputLeftElement
-                  pointerEvents="none"
-                  color="gray.300"
-                  fontSize="1.2em"
-                >
-                  $
-                </InputLeftElement>
-                <Input
-                  placeholder="Amount Paid"
-                  type="number"
-                  maxWidth="sm"
-                  onKeyDown={(e) => e.charCode >= 48}
-                  {...register("amountPaid", {
-                    valueAsNumber: true,
-                    min: 0,
-                    required: true,
-                  })}
-                />
-              </InputGroup>
-              <Button type="submit">{rightAction === "add" ? "+" : "-"}</Button>
-            </Flex>
-          </form>
-        </Box>
-      </motion.div>
-    </AnimatePresence>
+            <InputGroup>
+              <InputLeftElement
+                pointerEvents="none"
+                color="gray.300"
+                fontSize="1.2em"
+              >
+                $
+              </InputLeftElement>
+              <Input
+                placeholder="Amount Paid"
+                type="number"
+                maxWidth="sm"
+                onKeyDown={(e) => e.charCode >= 48}
+                {...register("amountPaid", {
+                  valueAsNumber: true,
+                  min: 0,
+                  required: true,
+                })}
+                onFocus={(e) =>
+                  e.currentTarget.value === "0" && e.currentTarget.select()
+                }
+              />
+            </InputGroup>
+            <Button type="submit">{rightAction === "add" ? "+" : "-"}</Button>
+          </Flex>
+        </form>
+      </Box>
+    </motion.div>
   );
 };
 
