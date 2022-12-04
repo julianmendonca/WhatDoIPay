@@ -4,8 +4,8 @@
   "display": "fullscreen",
   "scope": "/",
   "start_url": "/",
-  "name": "Shoul I Pay",
-  "short_name": "SIP",
+  "name": "Who Should Pay",
+  "short_name": "WSP",
   "description": "Easily split expenses!",
   "icons": [
     {
